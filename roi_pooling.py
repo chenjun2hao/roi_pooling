@@ -2,7 +2,8 @@ import numpy as np
 
 pooled_height = 2                                       # 每个区域池化之后的高度
 input_data = np.random.randint(1, 255,(1,64,50,50))       # image 
-rois = np.asarray([[0,10,10,20,20], [1,20,20,40,40],[2,1,2,30,7]])
+# rois = np.asarray([[0,10,10,20,20], [1,20,20,40,40],[2,1,2,30,7]])
+rois = np.asarray([[0,10,10,20,20]])
 
 batch, num_channels, height, weight = input_data.shape
 

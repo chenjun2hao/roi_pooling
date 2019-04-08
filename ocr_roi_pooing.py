@@ -124,29 +124,54 @@ class roi_pooling(Function):
         return torch.as_tensor(grad_output, dtype=grad_input_t.dtype), torch.as_tensor(rois, dtype=self.rois.dtype)
 
 
+class ScipyConv2d(Module):
+    def __init__(self):
+        super(ScipyConv2d, self).__init__()
+        self.conv1 = torch.nn.Conv2d(1, 1, 3, 1)
+        self.roi_pooling = roi_pooling(2)
+
+    def forward(self, img, rois):
+        conv = self.conv1(img)
+        pooled = self.roi_pooling(conv, rois)
+        return pooled
+
 
 if __name__ == "__main__":
-    pooled_height = 2                                       # 每个区域池化之后的高度
-    input_data = np.random.randint(1, 255,(1,64,50,50))       # image 
+    ## 第一个版本的测试
+    # pooled_height = 2                                       # 每个区域池化之后的高度
+    # input_data = np.random.randint(1, 255,(1,64,50,50))       # image 
+    # rois = np.asarray([[0,10,10,20,20], [1,20,20,40,40],[2,1,2,30,7]])
+
+    # # input_data = torch.from_numpy(input_data).to(torch.float)
+    # input_data = torch.randn(1,64,50,50)
+    # input_data = Variable(input_data, requires_grad=True)
+
+    # rois = torch.from_numpy(rois). to(torch.float)
+
+    # my_roi = roi_pooling(pooled_height)
+    
+    # print("反向传播之前，input的梯度为：{}".format(input_data.grad))
+
+    # output = my_roi(input_data, rois)
+
+    # output.backward(torch.randn(output.size()))
+
+    # print("反向传播之后，input的梯度为：{}".format(input_data.grad))
+    # a = 1
+
+    #///// 用module进行测试
+    # input_data = np.random.randint(1, 255,(1,64,50,50))       # image 
     rois = np.asarray([[0,10,10,20,20], [1,20,20,40,40],[2,1,2,30,7]])
 
     # input_data = torch.from_numpy(input_data).to(torch.float)
-    input_data = torch.randn(1,64,50,50)
+    input_data = torch.randn(1,1,50,50)
     input_data = Variable(input_data, requires_grad=True)
 
     rois = torch.from_numpy(rois). to(torch.float)
-
-    my_roi = roi_pooling(pooled_height)
-    
-    print("反向传播之前，input的梯度为：{}".format(input_data.grad))
-
-    output = my_roi(input_data, rois)
-
+    model = ScipyConv2d()
+    output = model(input_data, rois)
+    print("反向传播之前参数的梯度为：{}".format(list(model.parameters())[0].grad))
     output.backward(torch.randn(output.size()))
 
-    print("反向传播之后，input的梯度为：{}".format(input_data.grad))
-    a = 1
-
-    # test = gradcheck(my_roi,(input_data, rois), eps=1e-6, atol=1e-4)
-    # # test = gradcheck(moduleConv, input, eps=1e-6, atol=1e-4)
-    # print("Are the gradients correct: ", test)
+    print(list(model.parameters()))
+    print("反向传播之后参数的梯度为：{}".format(list(model.parameters())[0].grad))
