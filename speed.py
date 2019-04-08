@@ -3,10 +3,10 @@ import torch
 import torch.nn.functional as F
 from torch.autograd import Variable as tVariable
 from RoI_pooling import RoIPoolFunction
-import chainer.functions as FF
-import cupy as cp
-from chainer import Variable as cVariable
-from roi_module import RoIPooling2D
+# import chainer.functions as FF
+# import cupy as cp
+# from chainer import Variable as cVariable
+# from roi_module import RoIPooling2D
 
 
 def tV2cV(variable):    # torch Variable to Chainer Variable
@@ -92,7 +92,8 @@ if __name__ == '__main__':
             x = x.cuda()
             rois = rois.cuda()
 
-        for f, foo in enumerate([roi_pooling0, roi_pooling1, roi_pooling2, roi_pooling3]):
+        # for f, foo in enumerate([roi_pooling0, roi_pooling1, roi_pooling2, roi_pooling3]):
+        for f, foo in enumerate([roi_pooling0, roi_pooling3]):
             start = time.time()
             for t in range(T):
                 output = foo(x, rois)
